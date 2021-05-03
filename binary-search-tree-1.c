@@ -64,7 +64,7 @@ int main()
     do
     {
         printf("\n\n");
-        printf("----------------------------------------------------------------\n");
+        printf("----------[2018038074]----------------[임종훈]------------------\n");
         printf("                   Binary Search Tree #1                        \n");
         printf("----------------------------------------------------------------\n");
         printf(" Initialize BST       = z                                       \n");
@@ -75,33 +75,33 @@ int main()
         printf("----------------------------------------------------------------\n");
 
         printf("Command = ");
-        scanf(" %c", &command);
+        scanf(" %c", &command);//메뉴 선택
 
         switch (command)
         {
         case 'z':
         case 'Z':
             initializeBST(&head); //노드형의 주소를 저장하는 포인터 변수의 주소를 넣어줌.
+            //왜냐하면 main에 있는 head의 값을 직접 대입해주기 때문.
             break;
         case 'q':
         case 'Q':
-            freeBST(head);
+            freeBST(head);//함수 종료전 동적할당한 부분 해제
             break;
         case 'n':
         case 'N':
-            printf("Your Key = ");
-            scanf("%d", &key);
-            printf("%p\n",head);
+            printf("Your Key = ");//노드 삽입
+            scanf("%d", &key);//key값 입력
             insert(head, key);
             break;
         case 'd':
-        case 'D':
+        case 'D'://노드 삭제
             printf("Your Key = ");
-            scanf("%d", &key);
+            scanf("%d", &key);//삭제할 key입력
             deleteLeafNode(head, key);
             break;
         case 'f':
-        case 'F':
+        case 'F'://비재귀적(순환적) 이진 트리 탐색
             printf("Your Key = ");
             scanf("%d", &key);
             ptr = searchIterative(head, key);
@@ -111,7 +111,7 @@ int main()
                 printf("\n Cannot find the node [%d]\n", key);
             break;
         case 's':
-        case 'S':
+        case 'S'://재귀적인 이진 트리 탐색
             printf("Your Key = ");
             scanf("%d", &key);
             ptr = searchRecursive(head->left, key);
@@ -162,8 +162,9 @@ void inorderTraversal(Node *ptr)
 {
     while(ptr != NULL){
         inorderTraversal(ptr->left);
-        printf("%d", ptr->key);
+        printf("[%d]", ptr->key);
         inorderTraversal(ptr->right);
+        return ;
     }
 }
 
@@ -182,7 +183,8 @@ void postorderTraversal(Node *ptr)
     while(ptr != NULL){
         postorderTraversal(ptr->left);
         postorderTraversal(ptr->right);
-        printf("%d", ptr->key);
+        printf("[%d]", ptr->key);
+        return ;
     }
 }
 
@@ -208,7 +210,7 @@ int insert(Node *head, int key)
         temp = searchInsertAddress(head, key, &isNodeExist);//전처리 - 이미 key값이 저장되어 있는가?
     }
     
-    if(isNodeExist == 1){
+    if(isNodeExist == 1){//이미 존재하는 함수 추가시 전처리
         printf("트리에 이미 존재하는 key값입니다. [주소 : %p]\n\n", temp);
         free(node);
         return 0;
@@ -224,21 +226,73 @@ int insert(Node *head, int key)
 
     return 0;
 }
-
-int deleteLeafNode(Node *head, int key)
+/*1. 입력한 key값이 있는지 전처리
+2. 입력한 key가 존재할 때 노드가 leaf노드인지 확인 전처리
+3. leaf노드가 아니면 오류 메세지 출력과 함께 함수 종료
+4. leaf노드면 그 이전 노드가 가르키는 곳에 NULL을 넣어주고 해당 key의 노드 동적할당.*/
+int deleteLeafNode(Node *head, int key)//노드 삭제
 {
-  return 0;
+    Node* node = head->left;
+    Node* parent;
+
+    while(node != NULL || node !=NULL){
+        if(node->key == key){//노드의 key값이 입력한 key값과 같다면
+            //노드의 주소 반환
+            break;
+        }
+        if(node->key > key){//현재 읽고있는 노드의 key값이 찾는 key값보다 크면
+            parent = node;
+            node = node->left;//왼쪽 자식노드 탐색
+        }
+        else{//그렇지 않으면
+            parent = node;
+            node = node->right;//오른쪽 자식노드 탑색
+        }
+    }
+
+    //node에 NULL인 경우 값이 없음
+    if(node == NULL){
+        printf("There is no key in tree");
+        return 0;
+    }
+    //key를 찾은 경우 일단 해당 노드의 주소가 반환됨.
+    if(node->left == NULL && node->right == NULL){//key가 들어있는 노드에 양쪽이 다 NULL이면
+    //자식이 없으므로 leaf노드다.
+        if(node == head->left){//루트노드가 leaf노드라면
+            head->left = NULL;
+            free(node);//해제
+        }
+        parent->left = NULL;
+        free(node);
+    }
+    else{
+        printf("The node [%d] is not a leaf\n\n", node->key);
+    }
+
+    return 0;
 }
 
-Node *searchRecursive(Node *ptr, int key)
+Node *searchRecursive(Node *ptr, int key)//루트노드의 주소를 받음
 {
-  return 0;
+    if(ptr == NULL){//값이 null이면, 즉 노드의 끝까지 내려간 경우
+        return NULL;//없으면 null반환
+    }
+    if(ptr->key == key){//값을 찾으면 그 주소를 반환
+        return ptr;
+    }
+    if(ptr->key > key){//노드에 저장된 값이 찾는 값보다 크면
+        return searchRecursive(ptr->left, key);//왼쪽으로
+    }
+    else{//아니면 오른쪽으로 이동
+        return searchRecursive(ptr->right, key);
+    }
+    return 0;
 }
 
 Node *searchIterative(Node *head, int key)
 {
     Node* node = head->left;//node에 루트노드 주소 저장
-    while(node == NULL){
+    while(node != NULL){
         if(node->key == key){//노드의 key값이 입력한 key값과 같다면
             return node;//노드의 주소 반환
         }
@@ -286,5 +340,5 @@ Node *searchInsertAddress(Node *head, int key, int* isNodeExist){
         }
     }
 
-    return tail;
+    return tail;//마지막 노드 주소 반환
 }
