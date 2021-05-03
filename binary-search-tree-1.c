@@ -49,6 +49,9 @@ Node *searchIterative(Node *head, int key); /* search the node for the key */
 //모든 노드 동적할당 해제
 int freeBST(Node *head);                    /* free all memories allocated to the tree */
 
+//노드 삽입 주소 찾는 함수 추가.
+Node *searchInsertAddress(Node *head, int key, int* isNodeExist);
+
 /* you may add your own defined functions if necessary */
 
 int main()
@@ -88,6 +91,7 @@ int main()
         case 'N':
             printf("Your Key = ");
             scanf("%d", &key);
+            printf("%p\n",head);
             insert(head, key);
             break;
         case 'd':
@@ -160,6 +164,11 @@ void inorderTraversal(Node *ptr)
 
 void preorderTraversal(Node *ptr)
 {
+    if(ptr){
+        printf("%d", ptr->key);
+        preorderTraversal(ptr->left);
+        preorderTraversal(ptr->right);
+    }
 }
 
 void postorderTraversal(Node *ptr)
@@ -171,29 +180,50 @@ void postorderTraversal(Node *ptr)
 3. 노드 생성 및 값 대입*/
 int insert(Node *head, int key)
 {
-    Node* ptr = NULL;
-    ptr = searchIterative(head, key);//전처리 - 이미 key값이 저장되어 있는가?
-    if(ptr != NULL){
-        printf("트리에 이미 존재하는 key값입니다. [주소 : %p]\n\n", ptr);
+    Node* node;//동적할당 할 노드
+    printf("-1");
+    Node* temp;//위치를 임시 저장
+    int isNodeExist =0;
+    printf("1");
+    temp = searchInsertAddress(head, key, &isNodeExist);//전처리 - 이미 key값이 저장되어 있는가?
+    printf("2");
+    if(isNodeExist == 1){
+        printf("트리에 이미 존재하는 key값입니다. [주소 : %p]\n\n", temp);
         return 0;
     }
+    else{
+        //ptr은 동적할당한 주소를 저장할 주소를 가지고 있음
+        node = (Node*)malloc(sizeof(Node));
+        node->key = key;
+        node->left = NULL;
+        node->right = NULL;
+        printf("3");
 
+        if(temp->key > key){//삽입한 key가 기존 노드(부모노드)의 key보다 작으면
+            temp->left = node;//왼쪽 자신노드로
+        }
+        else{
+            temp->right = node;//아니면 오른쪽 자식노드로
+        }
+    }
 
     return 0;
 }
 
 int deleteLeafNode(Node *head, int key)
 {
+  return 0;
 }
 
 Node *searchRecursive(Node *ptr, int key)
 {
+  return 0;
 }
 
 Node *searchIterative(Node *head, int key)
 {
     Node* node = head->left;//node에 루트노드 주소 저장
-    while(node){
+    while(node == NULL){
         if(node->key == key){//노드의 key값이 입력한 key값과 같다면
             return node;//노드의 주소 반환
         }
@@ -219,4 +249,24 @@ int freeBST(Node *head)//모든 노드를 해제해주어야 함. 후위순회 �
         freeBST(head->right);//헤드노드에서 무한루프에 빠지나?
         free(head);
     }
+    return 0;
+}
+
+Node *searchInsertAddress(Node *head, int key, int* isNodeExist){
+    Node* tail;//저장할 주소
+    while(head == NULL){
+        tail = head;
+        if(head->key == key){//노드의 key값이 입력한 key값과 같다면
+            *isNodeExist = 1;
+            return head;//노드의 주소 반환
+        }
+        if(head->key > key){//현재 읽고있는 노드의 key값이 찾는 key값보다 크면
+            head = head->left;//왼쪽 자식노드 탐색
+        }
+        else{//그렇지 않으면
+            head = head->right;//오른쪽 자식노드 탑색
+        }
+    }
+
+    return tail;
 }
