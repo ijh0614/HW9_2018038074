@@ -7,6 +7,6 @@
 - [O] void preorderTraversal(Node* ptr); /* recursive preorder traversal \*/
 - [O] void inorderTraversal(Node* ptr); /* recursive inorder traversal \*/
 - [O] void postorderTraversal(Node* ptr); /* recursive postorder traversal \*/
-- [] int deleteLeafNode(Node* head, int key); /* delete the leaf node for the key \*/
-- [] Node* searchRecursive(Node* ptr, int key); /_ search the node for the key _/
+- [O] int deleteLeafNode(Node* head, int key); /* delete the leaf node for the key \*/
+- [O] Node* searchRecursive(Node* ptr, int key); /_ search the node for the key _/
 - [O] Node* searchIterative(Node* head, int key); /_ search the node for the key _/

@@ -158,33 +158,33 @@ int initializeBST(Node **h) //main에 있는 head에 직접 값을 보내준다.
     return 1;
 }
 
-void inorderTraversal(Node *ptr)
-{
+void inorderTraversal(Node *ptr)//재귀적. 루트노드의 주소를 받는다.
+{//중위 순회
     while(ptr != NULL){
         inorderTraversal(ptr->left);
         printf("[%d]", ptr->key);
         inorderTraversal(ptr->right);
-        return ;
+        return ;//맨 마지막에 탈출을 위해서 return
     }
 }
 
 void preorderTraversal(Node *ptr)//처음 ptr은 루트노드의 주소이다.
-{
+{//전위 순회
     while(ptr != NULL){
         printf("[%d]", ptr->key);
         preorderTraversal(ptr->left);
         preorderTraversal(ptr->right);
-        return ;
+        return ;//맨 마지막에 탈출을 위해서 return
     }
 }
 
 void postorderTraversal(Node *ptr)
-{
+{//후위순회
     while(ptr != NULL){
         postorderTraversal(ptr->left);
         postorderTraversal(ptr->right);
         printf("[%d]", ptr->key);
-        return ;
+        return ;//맨 마지막에 탈출을 위해서 return
     }
 }
 
@@ -235,11 +235,7 @@ int deleteLeafNode(Node *head, int key)//노드 삭제
     Node* node = head->left;
     Node* parent;
 
-    while(node != NULL || node !=NULL){
-        if(node->key == key){//노드의 key값이 입력한 key값과 같다면
-            //노드의 주소 반환
-            break;
-        }
+    while(node != NULL && node->key != key){//둘 중 하나만 참이어도 탈출. key값을 찾거나, 끝까지 돌았는데도 못 찾거나
         if(node->key > key){//현재 읽고있는 노드의 key값이 찾는 key값보다 크면
             parent = node;
             node = node->left;//왼쪽 자식노드 탐색
@@ -259,14 +255,20 @@ int deleteLeafNode(Node *head, int key)//노드 삭제
     if(node->left == NULL && node->right == NULL){//key가 들어있는 노드에 양쪽이 다 NULL이면
     //자식이 없으므로 leaf노드다.
         if(node == head->left){//루트노드가 leaf노드라면
-            head->left = NULL;
+            head->left = NULL;//헤드노드에 가르키는 값에 NULL넣고
             free(node);//해제
+            return 0;
         }
-        parent->left = NULL;
+        if(parent->key > node->key){//부모 노드가 지우려는 노드보다 크면
+            parent->left = NULL;//자식 노드가 왼쪽에 있음
+        }
+        else{//아니면
+            parent->right = NULL;//자식 노드가 오른쪽에 있음
+        }
         free(node);
     }
     else{
-        printf("The node [%d] is not a leaf\n\n", node->key);
+        printf("The node [%d] is not a leaf\n\n", node->key);//리프노드 아님
     }
 
     return 0;
